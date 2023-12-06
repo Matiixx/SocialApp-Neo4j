@@ -20,7 +20,7 @@ export default function OtherPosts() {
             key={index}
             className="my-2 flex w-full cursor-pointer flex-row items-center gap-4 rounded-xl bg-white/10 p-4 transition hover:bg-white/20"
             onClick={() => {
-              router.push(`/post/${post.post.id}`);
+              router.push(`/post/${post.post.postId}`);
             }}
           >
             <div

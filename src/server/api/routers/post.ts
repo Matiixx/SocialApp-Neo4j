@@ -28,8 +28,8 @@ export const postRouter = createTRPCRouter({
       }
 
       const res = await driver.executeQuery(
-        "CREATE (u:User {id: $id, name: $name, password: $password}) RETURN u",
-        { name: username, password, id: randomUUID() },
+        "CREATE (u:User {userId: $userId, name: $name, password: $password}) RETURN u",
+        { name: username, password, userId: randomUUID() },
       );
       return res.records[0];
     }),
@@ -44,8 +44,9 @@ export const postRouter = createTRPCRouter({
       const { content } = input;
       const userId = ctx.session?.user.id;
       const res = await driver.executeQuery(
-        "CREATE (p:Post {content: $content, id: $id, date: $date})-[:POSTED_BY]->(u:User {id: $userId}) RETURN p",
-        { content, userId, id: randomUUID(), date: Date.now() },
+        `MATCH (u:User {userId: $userId})
+          CREATE (p:Post {postId: $postId, content: $content, date: $date})-[:POSTED_BY]->(u) RETURN p, u`,
+        { content, userId, postId: randomUUID(), date: Date.now() },
       );
       return res;
     }),

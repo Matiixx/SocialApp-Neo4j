@@ -57,9 +57,9 @@ export const authOptions: NextAuthOptions = {
           return {
             id: (
               user.get("u") as {
-                properties: { id: string };
+                properties: { userId: string };
               }
-            ).properties.id,
+            ).properties.userId,
             name: (
               user.get("u") as {
                 properties: { name: string };
@@ -75,9 +75,4 @@ export const authOptions: NextAuthOptions = {
   ],
 };
 
-/**
- * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
- *
- * @see https://next-auth.js.org/configuration/nextjs
- */
 export const getServerAuthSession = () => getServerSession(authOptions);

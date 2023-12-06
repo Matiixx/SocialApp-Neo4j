@@ -15,7 +15,7 @@ export const getRouter = createTRPCRouter({
           properties: unknown;
         }
       ).properties as {
-        id: string;
+        postId: string;
         content: string;
         date: string;
       };
@@ -24,7 +24,7 @@ export const getRouter = createTRPCRouter({
           properties: unknown;
         }
       ).properties as {
-        id: string;
+        userId: string;
         username: string;
       };
 
@@ -39,8 +39,8 @@ export const getRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
       const res = await driver.executeQuery(
-        "MATCH (p:Post {id: $id})-[:POSTED_BY]->(u:User) RETURN p, u",
-        { id: input.id },
+        "MATCH (p:Post {postId: $postId})-[:POSTED_BY]->(u:User) RETURN p, u",
+        { postId: input.id },
       );
       if (!res.records[0]) return null;
 
@@ -50,7 +50,7 @@ export const getRouter = createTRPCRouter({
             properties: unknown;
           }
         ).properties as {
-          id: string;
+          postId: string;
           content: string;
         },
         user: (
@@ -58,7 +58,7 @@ export const getRouter = createTRPCRouter({
             properties: unknown;
           }
         ).properties as {
-          id: string;
+          userId: string;
           username: string;
         },
       };
