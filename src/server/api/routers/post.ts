@@ -8,37 +8,31 @@ import {
 } from "~/server/api/trpc";
 import driver from "../db";
 
-let post = {
-  id: 1,
-  name: "Hello World",
-};
-
 export const postRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
-
-  create: protectedProcedure
-    .input(z.object({ name: z.string().min(1) }))
+  createUser: publicProcedure
+    .input(
+      z.object({
+        username: z.string(),
+        password: z.string(),
+      }),
+    )
     .mutation(async ({ input }) => {
-      // simulate a slow db call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const { username, password } = input;
+      const maybeExists = await driver.executeQuery(
+        "MATCH (u:User {name: $name}) RETURN u",
+        { name: username },
+      );
 
-      post = { id: post.id + 1, name: input.name };
-      return post;
+      if (maybeExists.records[0]) {
+        return new Error("User already exists");
+      }
+
+      const res = await driver.executeQuery(
+        "CREATE (u:User {id: $id, name: $name, password: $password}) RETURN u",
+        { name: username, password, id: randomUUID() },
+      );
+      return res.records[0];
     }),
-
-  getLatest: protectedProcedure.query(() => {
-    return post;
-  }),
-
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
-  }),
 
   createPost: protectedProcedure
     .input(
