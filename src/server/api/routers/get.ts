@@ -1,10 +1,6 @@
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import driver from "../db";
 
 export const getRouter = createTRPCRouter({
@@ -14,12 +10,20 @@ export const getRouter = createTRPCRouter({
     );
 
     return res.records.map((record) => {
-      const post = record.get("p").properties as {
+      const post = (
+        record.get("p") as {
+          properties: unknown;
+        }
+      ).properties as {
         id: string;
         content: string;
         date: string;
       };
-      const user = record.get("u").properties as {
+      const user = (
+        record.get("u") as {
+          properties: unknown;
+        }
+      ).properties as {
         id: string;
         username: string;
       };
@@ -41,11 +45,19 @@ export const getRouter = createTRPCRouter({
       if (!res.records[0]) return null;
 
       return {
-        post: res.records[0].get("p").properties as {
+        post: (
+          res.records[0].get("p") as {
+            properties: unknown;
+          }
+        ).properties as {
           id: string;
           content: string;
         },
-        user: res.records[0].get("u").properties as {
+        user: (
+          res.records[0].get("u") as {
+            properties: unknown;
+          }
+        ).properties as {
           id: string;
           username: string;
         },

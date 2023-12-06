@@ -1,11 +1,10 @@
 "use client";
 
-import { type Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { api } from "~/trpc/react";
 
-export default function OtherPosts({ session }: { session: Session | null }) {
+export default function OtherPosts() {
   const router = useRouter();
   const { data: posts, isLoading } = api.get.getPosts.useQuery();
 

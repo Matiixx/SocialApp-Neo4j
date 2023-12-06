@@ -31,7 +31,7 @@ export default async function Home() {
         </div>
         <CreatePostWrapper session={session} />
 
-        <OtherPosts session={session} />
+        <OtherPosts />
       </div>
     </main>
   );
