@@ -22,8 +22,11 @@ export const env = createEnv({
       process.env.VERCEL ? z.string() : z.string().url()
     ),
     // Add ` on ID and SECRET if you want to make sure they're not empty
-    DISCORD_CLIENT_ID: z.string(),
-    DISCORD_CLIENT_SECRET: z.string(),
+    NEO4J_URI: z.string().url(),
+    NEO4J_USERNAME: z.string(),
+    NEO4J_PASSWORD: z.string(),
+    AURA_INSTANCEID: z.string(),
+    AURA_INSTANCENAME: z.string(),
   },
 
   /**
@@ -43,9 +46,11 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
-    DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
-    // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+    NEO4J_URI: process.env.NEO4J_URI,
+    NEO4J_USERNAME: process.env.NEO4J_USERNAME,
+    NEO4J_PASSWORD: process.env.NEO4J_PASSWORD,
+    AURA_INSTANCEID: process.env.AURA_INSTANCEID,
+    AURA_INSTANCENAME: process.env.AURA_INSTANCENAME,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

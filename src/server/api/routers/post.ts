@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { z } from "zod";
 
 import {
@@ -5,6 +6,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import driver from "../db";
 
 let post = {
   id: 1,
@@ -37,4 +39,20 @@ export const postRouter = createTRPCRouter({
   getSecretMessage: protectedProcedure.query(() => {
     return "you can now see this secret message!";
   }),
+
+  createPost: protectedProcedure
+    .input(
+      z.object({
+        content: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { content } = input;
+      const userId = ctx.session?.user.id;
+      const res = await driver.executeQuery(
+        "CREATE (p:Post {content: $content, id: $id, date: $date})-[:POSTED_BY]->(u:User {id: $userId}) RETURN p",
+        { content, userId, id: randomUUID(), date: Date.now() },
+      );
+      return res;
+    }),
 });

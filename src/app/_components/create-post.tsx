@@ -7,12 +7,13 @@ import { api } from "~/trpc/react";
 
 export function CreatePost() {
   const router = useRouter();
-  const [name, setName] = useState("");
+  const [content, setContent] = useState("");
+  const [error, setError] = useState<string>();
 
-  const createPost = api.post.create.useMutation({
+  const createPost = api.post.createPost.useMutation({
     onSuccess: () => {
       router.refresh();
-      setName("");
+      setContent("");
     },
   });
 
@@ -20,16 +21,25 @@ export function CreatePost() {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        createPost.mutate({ name });
+        if (!content) {
+          setError("Please write something!");
+          return;
+        }
+        createPost.mutate({ content });
       }}
       className="flex flex-col gap-2"
     >
       <input
         type="text"
-        placeholder="Title"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className="w-full rounded-full px-4 py-2 text-black"
+        placeholder="Write something..."
+        value={content}
+        onChange={(e) => {
+          setError(undefined);
+          setContent(e.currentTarget.value);
+        }}
+        className={`w-full rounded-full px-4 py-2 text-black ${
+          error ? "border-2 border-red-500" : ""
+        }`}
       />
       <button
         type="submit"

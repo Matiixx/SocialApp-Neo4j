@@ -1,11 +1,17 @@
-import { type Session } from "next-auth";
-
-import { CreatePost } from "~/app/_components/create-post";
+import React from "react";
 import { getServerAuthSession } from "~/server/auth";
-import OtherPosts from "./_components/other-posts";
 
-export default async function Home() {
+import { api } from "~/trpc/server";
+
+export default async function Post({ params }: { params: { id: string } }) {
   const session = await getServerAuthSession();
+  const post = await api.get.getPost.query({
+    id: params.id,
+  });
+
+  if (!post) {
+    return null;
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
@@ -29,20 +35,14 @@ export default async function Home() {
             </>
           )}
         </div>
-        <CreatePostWrapper session={session} />
 
-        <OtherPosts session={session} />
+        <div className="my-2 flex w-full cursor-pointer flex-row items-center gap-4 rounded-xl bg-white/10 p-4 transition hover:bg-white/20">
+          <div className="rounded p-1 transition hover:bg-white/20">
+            @{post.user.username ?? "user"}
+          </div>
+          <div>{post.post.content}</div>
+        </div>
       </div>
     </main>
-  );
-}
-
-async function CreatePostWrapper({ session }: { session: Session | null }) {
-  if (!session?.user) return null;
-
-  return (
-    <div className="w-full max-w-lg">
-      <CreatePost />
-    </div>
   );
 }
