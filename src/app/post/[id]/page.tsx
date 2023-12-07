@@ -1,12 +1,12 @@
 import React from "react";
 
 import { AddComment } from "~/app/_components/add-comment";
+import { api } from "~/trpc/server";
 import { getServerAuthSession } from "~/server/auth";
+import DeletePostIcon from "~/app/_components/delete-post-icon";
+import LikeUnlike from "~/app/_components/like-unlike";
 import Logo from "~/app/_components/logo";
 import OtherComments from "~/app/_components/comments";
-
-import { api } from "~/trpc/server";
-import DeletePostIcon from "~/app/_components/delete-post-icon";
 import SessionButtons from "~/app/_components/session-buttons";
 
 export default async function Post({ params }: { params: { id: string } }) {
@@ -37,9 +37,19 @@ export default async function Post({ params }: { params: { id: string } }) {
                   @{post.user.name ?? "user"}
                 </div>
                 <div className="flex-1">{post.post.content}</div>
-                <div>
-                  <DeletePostIcon postId={params.id} />
-                </div>
+                {session?.user?.id === post.user.userId && (
+                  <div>
+                    <DeletePostIcon postId={params.id} />
+                  </div>
+                )}
+                {session?.user?.id !== post.user.userId && (
+                  <LikeUnlike
+                    liked={post.liked}
+                    postId={post.post.postId}
+                    session={session}
+                    postUserId={post.user.userId}
+                  />
+                )}
               </div>
 
               <div className="w-full">

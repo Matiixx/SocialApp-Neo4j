@@ -81,7 +81,45 @@ export const getRouter = createTRPCRouter({
 
   getPost: publicProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ ctx, input }) => {
+      if (ctx.session?.user.id) {
+        const res = await driver.executeQuery(
+          `
+          MATCH (currentUser:User {userId: $userId})
+          MATCH (post:Post {postId: $postId})-[:POSTED_BY]-(author:User)
+          OPTIONAL MATCH (currentUser)-[l:LIKED]->(post)
+          RETURN post, author, l AS liked
+          `,
+          {
+            userId: ctx.session.user.id,
+            postId: input.id,
+          },
+        );
+
+        if (!res.records[0]) return null;
+
+        return {
+          post: (
+            res.records[0].get("post") as {
+              properties: unknown;
+            }
+          ).properties as {
+            postId: string;
+            content: string;
+            date: string;
+          },
+          user: (
+            res.records[0].get("author") as {
+              properties: unknown;
+            }
+          ).properties as {
+            userId: string;
+            name: string;
+          },
+          liked: !!res.records[0].get("liked"),
+        };
+      }
+
       const res = await driver.executeQuery(
         "MATCH (p:Post {postId: $postId})-[:POSTED_BY]->(u:User) RETURN p, u",
         { postId: input.id },
@@ -105,6 +143,7 @@ export const getRouter = createTRPCRouter({
           userId: string;
           name: string;
         },
+        liked: false,
       };
     }),
 

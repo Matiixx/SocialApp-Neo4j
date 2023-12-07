@@ -5,18 +5,13 @@ import { useRouter } from "next/navigation";
 import { type Session } from "node_modules/next-auth/core/types";
 
 import CircularProgress from "@mui/material/CircularProgress";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import IconButton from "@mui/material/IconButton";
 
 import { api } from "~/trpc/react";
+import LikeUnlike from "./like-unlike";
 
 export default function OtherPosts({ session }: { session: Session | null }) {
   const router = useRouter();
-  const utils = api.useUtils();
   const { data: posts, isLoading } = api.get.getPosts.useQuery();
-  const like = api.post.like.useMutation();
-  const unlike = api.post.unlike.useMutation();
 
   if (!posts || isLoading) {
     return (
@@ -32,7 +27,15 @@ export default function OtherPosts({ session }: { session: Session | null }) {
         return (
           <div
             key={index}
-            className="my-2 flex w-full cursor-pointer flex-col items-center gap-4 rounded-xl bg-white/10 p-4 transition hover:bg-white/20"
+            className={`my-2 flex w-full cursor-pointer flex-col items-center gap-4 rounded-xl ${
+              session?.user?.id === post.user.userId
+                ? "bg-white/20"
+                : "bg-white/10"
+            } p-4 transition ${
+              session?.user?.id === post.user.userId
+                ? "hover:bg-white/30"
+                : "hover:bg-white/20"
+            }`}
             onClick={() => {
               router.push(`/post/${post.post.postId}`);
             }}
@@ -53,42 +56,13 @@ export default function OtherPosts({ session }: { session: Session | null }) {
               </div>
             </div>
             <div className="flex w-full justify-end">
-              {post.liked ? (
-                <IconButton
-                  sx={{ color: "red" }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    unlike.mutate(
-                      { postId: post.post.postId },
-                      {
-                        onSuccess: () => {
-                          utils.invalidate().catch(console.error);
-                        },
-                      },
-                    );
-                  }}
-                >
-                  <FavoriteIcon />
-                </IconButton>
-              ) : (
-                <IconButton
-                  sx={{ color: "white" }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (post.user.userId === session?.user.id) return;
-
-                    like.mutate(
-                      { postId: post.post.postId },
-                      {
-                        onSuccess: () => {
-                          utils.invalidate().catch(console.error);
-                        },
-                      },
-                    );
-                  }}
-                >
-                  <FavoriteBorderIcon />
-                </IconButton>
+              {session?.user?.id !== post.user.userId && (
+                <LikeUnlike
+                  liked={post.liked}
+                  postId={post.post.postId}
+                  session={session}
+                  postUserId={post.user.userId}
+                />
               )}
             </div>
           </div>
