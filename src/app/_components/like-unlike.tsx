@@ -31,6 +31,7 @@ function LikeUnlike({
       {liked ? (
         <IconButton
           sx={{ color: "red" }}
+          disabled={unlike.isLoading}
           onClick={(e) => {
             e.stopPropagation();
             unlike.mutate(
@@ -49,6 +50,7 @@ function LikeUnlike({
       ) : (
         <IconButton
           sx={{ color: "white" }}
+          disabled={like.isLoading}
           onClick={(e) => {
             e.stopPropagation();
             if (postUserId === session?.user.id) return;
