@@ -22,6 +22,7 @@ function LikeUnlike({
   postUserId: string;
 }) {
   const router = useRouter();
+  const utils = api.useUtils();
   const like = api.post.like.useMutation();
   const unlike = api.post.unlike.useMutation();
 
@@ -37,6 +38,7 @@ function LikeUnlike({
               {
                 onSuccess: () => {
                   router.refresh();
+                  utils.invalidate().catch(console.error);
                 },
               },
             );
@@ -56,6 +58,7 @@ function LikeUnlike({
               {
                 onSuccess: () => {
                   router.refresh();
+                  utils.invalidate().catch(console.error);
                 },
               },
             );
