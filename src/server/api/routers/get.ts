@@ -49,7 +49,7 @@ export const getRouter = createTRPCRouter({
     }
 
     const res = await driver.executeQuery(
-      "MATCH (p:Post)-[:POSTED_BY]->(u:User) RETURN p, u",
+      "MATCH (p:Post)-[:POSTED_BY]->(u:User) RETURN p, u ORDER BY p.date DESC",
     );
 
     return res.records.map((record) => {
@@ -152,7 +152,7 @@ export const getRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { postId } = input;
       const res = await driver.executeQuery(
-        `MATCH (c:Comment)-[:COMMENTED_BY]->(u:User), (c)-[:COMMENTED_ON]->(p:Post {postId: $postId}) RETURN c, u`,
+        `MATCH (c:Comment)-[:COMMENTED_BY]->(u:User), (c)-[:COMMENTED_ON]->(p:Post {postId: $postId}) RETURN c, u ORDER BY c.date ASC`,
         { postId },
       );
       const comments = res.records.map((record) => {
