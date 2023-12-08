@@ -7,9 +7,14 @@ function SessionButtons({ session }: { session: Session | null }) {
   return (
     <>
       {session?.user ? (
-        <button className="rounded-full bg-white/10 px-10 py-3 font-semibold transition hover:bg-white/20">
-          <a href="/api/auth/signout">Logout</a>
-        </button>
+        <div className="flex flex-row items-center gap-8">
+          <span>
+            Logged in as <b>@{session.user.name}</b>
+          </span>
+          <button className="rounded-full bg-white/10 px-10 py-3 font-semibold transition hover:bg-white/20">
+            <a href="/api/auth/signout">Logout</a>
+          </button>
+        </div>
       ) : (
         <>
           <button className="rounded-full bg-white/10 px-10 py-3 font-semibold transition hover:bg-white/20">
